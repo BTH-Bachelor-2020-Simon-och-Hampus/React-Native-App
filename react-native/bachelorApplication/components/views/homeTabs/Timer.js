@@ -15,8 +15,8 @@ export default class Timer extends Component {
 			timerActive: false,
 			isDialogVisible: false,
 			uniqueId: DeviceInfo.getUniqueId(),
-			location: null
-			//database: require('.../db/config-db.json')
+			location: null,
+			database: require('../../db/config-db.json')
 		};
 	}
 
@@ -58,11 +58,10 @@ export default class Timer extends Component {
 		let date=today.getDate() + "-"+ parseInt(today.getMonth()+1) +"-"+today.getFullYear();
 
 		let test = JSON.parse(this.state.location)
-		alert(test.coords.latitude)
 		let latitude = JSON.stringify(test.coords.latitude);
 		let longitude = JSON.stringify(test.coords.longitude);
 		try{
-			let response = await fetch('http://80.78.219.10:8529/_db/Bachelor/activities_crud/activities', {
+			let response = await fetch('http://' + this.state.database.ip + '/_db/Bachelor/activities_crud/activities', {
 			method: 'POST',
 				headers: {
 					Accept: 'application/json',
