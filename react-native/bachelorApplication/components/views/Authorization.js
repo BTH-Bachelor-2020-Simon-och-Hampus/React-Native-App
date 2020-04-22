@@ -21,7 +21,7 @@ export default class Authorizaton extends Component {
 				this.props.navigation.navigate('HomeScreen')
 			}
 			else{
-				this.addUser(uniqueId);
+				this.addUser(this.state.uniqueId);
 			}
 		}	
 		catch (error) {

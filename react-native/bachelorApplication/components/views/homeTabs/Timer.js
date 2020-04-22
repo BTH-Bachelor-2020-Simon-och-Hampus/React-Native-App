@@ -4,8 +4,29 @@ import BackgroundTimer from "react-native-background-timer";
 import DialogInput from 'react-native-dialog-input';
 import DeviceInfo from 'react-native-device-info';
 import Geolocation from '@react-native-community/geolocation';
+import BackgroundFetch from "react-native-background-fetch";
 
 const timerResetState = 0
+
+let headlessTask = async (event) => {
+	// Get task id from event {}:
+	let taskId = event.taskId;
+	console.log('[BackgroundFetch HeadlessTask] start: ', taskId);
+  
+	// Perform an example HTTP request.
+	// Important:  await asychronous tasks when using HeadlessJS.
+	let response = await fetch('https://facebook.github.io/react-native/movies.json');
+	let responseJson = await response.json();
+	console.log('[BackgroundFetch HeadlessTask] response: ', responseJson);
+  
+	// Required:  Signal to native code that your task is complete.
+	// If you don't do this, your app could be terminated and/or assigned
+	// battery-blame for consuming too much time in background.
+	BackgroundFetch.finish(taskId);
+  }
+  
+  // Register your BackgroundFetch HeadlessTask
+  BackgroundFetch.registerHeadlessTask(headlessTask);
 
 export default class Timer extends Component {
 	constructor(props) {
@@ -18,6 +39,63 @@ export default class Timer extends Component {
 			location: null,
 			database: require('../../db/config-db.json')
 		};
+	}
+
+	componentDidMount() {
+		// Configure it.
+		BackgroundFetch.configure({
+			enableHeadless: true,
+			minimumFetchInterval: 15,     // <-- minutes (15 is minimum allowed)
+			// Android options
+			forceAlarmManager: false,     // <-- Set true to bypass JobScheduler.
+			stopOnTerminate: false,
+			startOnBoot: true,
+			requiredNetworkType: BackgroundFetch.NETWORK_TYPE_ANY, // Default
+			requiresCharging: false,      // Default
+			requiresDeviceIdle: false,    // Default
+			requiresBatteryNotLow: false, // Default
+			requiresStorageNotLow: false  // Default
+		},	async (taskId) => {
+			console.log("[js] Received background-fetch event: ", taskId);
+			// Required: Signal completion of your task to native code
+			// If you fail to do this, the OS can terminate your app
+			// or assign battery-blame for consuming too much background-time
+			BackgroundFetch.finish(taskId);
+		}, (error) => {
+			console.log("[js] React-Native: Background-Fetch failed to start");
+		});
+	
+		// Optional: Query the authorization status.
+		BackgroundFetch.status((status) => {
+			switch(status) {
+				case BackgroundFetch.STATUS_RESTRICTED:
+					console.log("[js] Background-fetch event: Restricted");
+					break;
+				case BackgroundFetch.STATUS_DENIED:
+					console.log("[js] Background-fetch event: Denied");
+					break;
+				case BackgroundFetch.STATUS_AVAILABLE:
+					console.log("[js] Background-fetch event: Enabled");
+					break;
+			}
+		});
+
+		// Step 2:  Schedule a custom "oneshot" task "com.foo.customtask" to execute 5000ms from now.
+		BackgroundFetch.scheduleTask({
+			taskId: "Wake.Up.Task.Test",
+			forceAlarmManager: true,
+			enableHeadless: true,
+			minimumFetchInterval: 15,     // <-- minutes (15 is minimum allowed)
+			// Android options
+			stopOnTerminate: false,
+			startOnBoot: true,
+			requiredNetworkType: BackgroundFetch.NETWORK_TYPE_ANY, // Default
+			requiresCharging: false,      // Default
+			requiresDeviceIdle: false,    // Default
+			requiresBatteryNotLow: false, // Default
+			requiresStorageNotLow: false,  // Default
+			delay: 10000  // <-- milliseconds
+		});
 	}
 
 	_interval: any;
