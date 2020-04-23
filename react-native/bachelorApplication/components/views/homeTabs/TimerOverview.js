@@ -66,8 +66,6 @@ export default class TimerOverview extends Component {
 	render() {
 		return (
 			<View style={styles.container}>
-				<Button title='			Refresh		' 
-				onPress={() => this.findAllActivities()}></Button>
 				<FlatList
 				data={this.state.activitis}
 				renderItem={this.renderItem}
@@ -75,6 +73,11 @@ export default class TimerOverview extends Component {
 				onRefresh={() => this.onRefresh()}
 				refreshing={this.state.isFetching}
 			/>
+				<Button
+					color='#f4511e' 
+					title='Update' 
+					onPress={() => this.findAllActivities()}>
+				</Button>
 			</View>
 		)
 	}
@@ -82,28 +85,31 @@ export default class TimerOverview extends Component {
 
 const styles = StyleSheet.create({
 	container: {
-	  flex: 1,
-	  justifyContent: 'center',
-	  backgroundColor: '#F5FCFF',
+		flex: 1,
+		backgroundColor: '#f2f2f2',
 	},
 	h2text: {
-	  marginTop: 10,
-	  fontFamily: 'Helvetica',
-	  fontSize: 36,
-	  fontWeight: 'bold',
+		marginTop: 10,
+		fontFamily: 'Helvetica',
+		fontSize: 36,
+		fontWeight: 'bold',
 	},
 	flatview: {
-	  justifyContent: 'center',
-	  paddingTop: 30,
-	  alignItems: 'center',
-	  borderRadius: 2,
+		backgroundColor: 'white',
+		alignItems:"center",
+		height:80,
+		marginTop: "5%",
+		marginRight: "20%",
+		marginLeft:"20%",
+		borderRadius:20,
 	},
 	name: {
-	  fontFamily: 'Verdana',
-	  fontSize: 18
+		fontFamily: 'Verdana',
+		fontSize: 18,
+		marginTop:17,
 	},
 	email: {
-	  color: 'red'
+		color: 'green'
 	}
-	
+
   });

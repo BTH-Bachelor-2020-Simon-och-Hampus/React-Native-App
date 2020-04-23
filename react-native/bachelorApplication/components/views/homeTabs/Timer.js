@@ -5,7 +5,7 @@ import DialogInput from 'react-native-dialog-input';
 import DeviceInfo from 'react-native-device-info';
 import Geolocation from '@react-native-community/geolocation';
 import BackgroundFetch from "react-native-background-fetch";
-
+import PushNotification from "react-native-push-notification";
 const timerResetState = 0
 
 let headlessTask = async (event) => {
@@ -15,10 +15,17 @@ let headlessTask = async (event) => {
   
 	// Perform an example HTTP request.
 	// Important:  await asychronous tasks when using HeadlessJS.
-	let response = await fetch('https://facebook.github.io/react-native/movies.json');
-	let responseJson = await response.json();
-	console.log('[BackgroundFetch HeadlessTask] response: ', responseJson);
-  
+	//let response = await fetch('https://facebook.github.io/react-native/movies.json');
+	//let responseJson = await response.json();
+	//console.log('[BackgroundFetch HeadlessTask] response: ', responseJson);
+	
+	PushNotification.localNotification({
+		/* iOS and Android properties */
+		title: "Activity application", // (optional)
+		message: "Dont forget to register your daily activities!", // (required)
+		playSound: true, // (optional) default: true
+		soundName: "default", // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
+	});
 	// Required:  Signal to native code that your task is complete.
 	// If you don't do this, your app could be terminated and/or assigned
 	// battery-blame for consuming too much time in background.
@@ -80,33 +87,64 @@ export default class Timer extends Component {
 			}
 		});
 
-		// Step 2:  Schedule a custom "oneshot" task "com.foo.customtask" to execute 5000ms from now.
-		BackgroundFetch.scheduleTask({
-			taskId: "Wake.Up.Task.Test",
-			forceAlarmManager: true,
-			enableHeadless: true,
-			minimumFetchInterval: 15,     // <-- minutes (15 is minimum allowed)
-			// Android options
-			stopOnTerminate: false,
-			startOnBoot: true,
-			requiredNetworkType: BackgroundFetch.NETWORK_TYPE_ANY, // Default
-			requiresCharging: false,      // Default
-			requiresDeviceIdle: false,    // Default
-			requiresBatteryNotLow: false, // Default
-			requiresStorageNotLow: false,  // Default
-			delay: 10000  // <-- milliseconds
-		});
+		PushNotification.configure({
+			// (optional) Called when Token is generated (iOS and Android)
+			onRegister: function (token) {
+			  console.log("TOKEN:", token);
+			},
+		   
+			// (required) Called when a remote or local notification is opened or received
+			onNotification: function (notification) {
+			  console.log("NOTIFICATION:", notification);
+		   
+			  // process the notification
+		   
+			  // required on iOS only (see fetchCompletionHandler docs: https://github.com/react-native-community/react-native-push-notification-ios)
+			  notification.finish(PushNotificationIOS.FetchResult.NoData);
+			},
+		   
+			// ANDROID ONLY: FCM Sender ID (product_number) (optional - not required for local notifications, but is need to receive remote push notifications)
+			senderID: "YOUR FCM SENDER ID",
+		   
+			// IOS ONLY (optional): default: all - Permissions to register.
+			permissions: {
+			  alert: true,
+			  badge: true,
+			  sound: true,
+			},
+		   
+			// Should the initial notification be popped automatically
+			// default: true
+			popInitialNotification: false,
+		   
+			/**
+			 * (optional) default: true
+			 * - Specified if permissions (ios) and token (android and ios) will requested or not,
+			 * - if not, you must call PushNotificationsHandler.requestPermissions() later
+			 */
+			requestPermissions: true,
+		  });
 	}
 
+	pushNotification = () => {
+		PushNotification.localNotification({
+			/* iOS and Android properties */
+			title: "Timer", // (optional)
+			message: "Timer has successfully started", // (required)
+			playSound: true, // (optional) default: true
+			soundName: "default", // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
+		});
+		
+	}
 	_interval: any;
 
 	onStart = () => {
-
 		if (Platform.OS =="ios") {
 			BackgroundTimer.start();
 		  }
 
 		if(this.state.timerActive == false){
+			this.pushNotification();
 			this.setState({timerActive: true});
 			this._interval = BackgroundTimer.setInterval(() => {
 				this.setState({
@@ -207,12 +245,12 @@ export default class Timer extends Component {
 			<Text style={styles.secondText}>{this.timeConvert()}</Text>
 				
 				<View style={styles.buttonWrapper}>
-					<Button title=" 	Start	" onPress={() =>this.onStart()}></Button>
-					<Button title=" 	Stop	" onPress={() =>this.onPause()}></Button>
-					<Button title=" 	Reset	" onPress={() =>this.onReset()}></Button>
+					<Button color='#f4511e' title=" 	Start	" onPress={() =>this.onStart()}></Button>
+					<Button color='#f4511e' title=" 	Stop	" onPress={() =>this.onPause()}></Button>
+					<Button color='#f4511e' title=" 	Reset	" onPress={() =>this.onReset()}></Button>
 				</View>
 				
-				<View style={styles.buttonWrapperTwo}><Button title=" 	Save Activity	" onPress={() => (this.findCoordinates(),this.showDialog(true))}></Button></View>
+				<View style={styles.buttonWrapperTwo}><Button color='#f4511e' title=" 	Save Activity	" onPress={() => (this.findCoordinates(),this.showDialog(true))}></Button></View>
 				
 				
 				<DialogInput isDialogVisible={this.state.isDialogVisible}

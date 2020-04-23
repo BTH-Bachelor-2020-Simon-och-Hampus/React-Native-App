@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {StyleSheet, View, Text, Button, ImageBackground, TextInput} from 'react-native';
+import {StyleSheet, View, Text, Button, ImageBackground, TextInput, Image} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
 export default class Authorizaton extends Component {
@@ -54,10 +54,15 @@ export default class Authorizaton extends Component {
 	
 	render() {
 		return (
-			<View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
-			<Text>Welcome</Text>
+			<View style={{ flex: 2, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF' }}>
+				<Image
+					style={styles.tinyLogo}
+					source={require('../images/clock.png')}
+				/>
+			<Text style={{ fontSize:24, marginBottom:15 }}>Welcome</Text>
 			<Button 
-				title='			Get started			' 
+				color='#f4511e'
+				title='				Get started				' 
 				onPress={() => this.isUser()}></Button>
 		</View>
 		)
@@ -66,6 +71,15 @@ export default class Authorizaton extends Component {
 
 const styles = StyleSheet.create({
 	body: {
-		backgroundColor: 'white',
+		backgroundColor: '#FFFFFF',
 	},
+	tinyLogo: {
+		width: 400,
+		height: 400,
+		marginTop:-130,
+	},
+	text: {
+		fontSize: 20,
+	},
+
 });

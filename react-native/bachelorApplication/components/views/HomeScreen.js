@@ -19,7 +19,7 @@ function HomeTabs() {
 	return (
 		<Tab.Navigator>
 			<Tab.Screen name="Timer" component={TimerScreen} />
-			<Tab.Screen name="Overview" component={TimerOverview} />
+			<Tab.Screen name="Activities" component={TimerOverview} />
 		</Tab.Navigator>
 	);
 }

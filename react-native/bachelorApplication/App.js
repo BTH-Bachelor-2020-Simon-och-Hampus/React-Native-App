@@ -12,9 +12,31 @@ export default function App() {
 	return (
 		<NavigationContainer>
 			<Stack.Navigator>
-				<Stack.Screen name="Authorization" component={Authorization} />
-				<Stack.Screen options={{ headerLeft: null }}  name="HomeScreen" component={HomeScreen} independent='true' />
+				<Stack.Screen options={{ 
+					headerLeft: null, 
+					title: '',
+					headerStyle: {
+						backgroundColor: '#f4511e',
+					},
+					headerTintColor: '#fff',
+					headerTitleStyle: {
+						fontWeight: 'bold',
+						alignItems:'center',
+					}, 
+				}}	name="Authorization" component={Authorization} />
+				<Stack.Screen options={{ 
+					headerLeft: null, 
+					title: '',
+					headerStyle: {
+						backgroundColor: '#f4511e',
+					},
+					headerTintColor: '#fff',
+					headerTitleStyle: {
+						fontWeight: 'bold',
+						alignItems:'center',
+					}, 
+				}}	name="HomeScreen" component={HomeScreen} independent='true' />
 			</Stack.Navigator>
 		</NavigationContainer>
-		);
+	);
 }
