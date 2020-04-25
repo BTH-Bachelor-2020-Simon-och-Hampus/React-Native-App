@@ -18,6 +18,7 @@ export default class Authorizaton extends Component {
 			let response = await fetch('http://' + this.state.database.ip + '/_db/Bachelor/user_crud/users/'+ this.state.uniqueId);
 			
 			if(response.status == OK){
+				alert(this.state.uniqueId)
 				this.props.navigation.navigate('HomeScreen')
 			}
 			else{
